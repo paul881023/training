@@ -49,9 +49,7 @@ class Player(pygame.sprite.Sprite):
         if key_pressed[pygame.K_w]:
             self.rect.y -= 2
         if key_pressed[pygame.K_s]:
-            self.rect.y += 2     
-
-        print(self.rect.x,",",self.rect.y)   
+            self.rect.y += 2      
 
         if self.rect.centerx > width:
             self.rect.centerx = width
@@ -66,11 +64,14 @@ class Player(pygame.sprite.Sprite):
         bullet = Bullet(self.rect.centerx,self.rect.y)
         all_sprites.add(bullet)
         bullets.add(bullet)
+
 class Rock(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) 
-        self.image =pygame.transform.scale(rock_jpg,(30,30))
-        self.image.set_colorkey(white)
+        self.image_ori = pygame.transform.scale(rock_jpg,(50,50))
+        self.image_ori.set_colorkey(white)
+        self.image = self.image_ori.copy()
+
         self.rect = self.image.get_rect()
         self.radius = self.rect.width * 0.85 / 2
         #pygame.draw.circle(self.image,red,self.rect.center,self.radius)
@@ -78,8 +79,19 @@ class Rock(pygame.sprite.Sprite):
         self.rect.y = random.randrange(-100,-40)
         self.speedy = random.randrange(3,7)
         self.speedx = random.randrange(-2,2)
-       
+        self.total_degree = 0
+        self.rot_degree = random.randrange(-5,5) 
+
+    def rotate(self):
+        self.total_degree += self.rot_degree
+        self.total_degree = self.total_degree % 360
+        self.image = pygame.transform.rotate(self.image_ori,self.total_degree)
+        center = self.rect.center
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+ 
     def update(self):
+        self.rotate()
         self.rect.y +=self.speedy
         self.rect.x +=self.speedx
         if self.rect.top > height:
