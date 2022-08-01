@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import os
 FPS = 60
 
 #顏色
@@ -20,20 +20,26 @@ bullet_width = 10
 bullet_height = 10   
 #初始化
 pygame.init()
-screen = pygame.display.set_mode((width,height))
+screen = pygame.display.set_mode((width,height)) 
 pygame.display.set_caption("test1")
 clock = pygame.time.Clock()
+#圖片
+backgound_jpg = pygame.image.load(os.path.join("pygame","jpg","back.jpg")).convert()
+rock_jpg = pygame.image.load(os.path.join("pygame","jpg","rock_2.webp")).convert()
+airplane_jpg = pygame.image.load(os.path.join("pygame","jpg","airplane.jpg")).convert()
 
 #設定相關物件
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) 
-        self.image = pygame.Surface((40,50))
-        self.image.fill(green)
+        self.image = pygame.transform.scale(airplane_jpg,(70,50))
+        self.image.set_colorkey(black) 
         self.rect = self.image.get_rect()
+        self.radius = 20 
+        #pygame.draw.circle(self.image,red,self.rect.center,self.radius)
         self.rect.centerx = width / 2
         self.rect.y = height + 10
-
+        
     def update(self):
         key_pressed = pygame.key.get_pressed()
         if key_pressed[pygame.K_a]:
@@ -63,14 +69,16 @@ class Player(pygame.sprite.Sprite):
 class Rock(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) 
-        self.image = pygame.Surface((rock_width,rock_height))
-        self.image.fill(red)
+        self.image =pygame.transform.scale(rock_jpg,(30,30))
+        self.image.set_colorkey(white)
         self.rect = self.image.get_rect()
+        self.radius = self.rect.width * 0.85 / 2
+        #pygame.draw.circle(self.image,red,self.rect.center,self.radius)
         self.rect.x = random.randrange(0,width-self.rect.width)
         self.rect.y = random.randrange(-100,-40)
         self.speedy = random.randrange(3,7)
         self.speedx = random.randrange(-2,2)
-
+       
     def update(self):
         self.rect.y +=self.speedy
         self.rect.x +=self.speedx
@@ -124,11 +132,12 @@ while running:
         rock = Rock()
         all_sprites.add(rock)
         rocks.add(rock)
-    hits = pygame.sprite.spritecollide(player,rocks,False,False)
+    hits = pygame.sprite.spritecollide(player,rocks,False, pygame.sprite.collide_circle)
     if hits:
         running = False
      #顯示
     screen.fill(black)
+    screen.blit(backgound_jpg,(0,0))
     all_sprites.draw(screen)
     pygame.display.update()
     
