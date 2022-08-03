@@ -87,7 +87,7 @@ class Rock(pygame.sprite.Sprite):
         self.total_degree = self.total_degree % 360
         self.image = pygame.transform.rotate(self.image_ori,self.total_degree)
         center = self.rect.center
-        self.rect = self.image.get_rect()
+        self.rect = self.image  .get_rect()
         self.rect.center = center
  
     def update(self):
